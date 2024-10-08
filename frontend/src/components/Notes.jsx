@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import { Box, Spinner, Text, VStack } from '@chakra-ui/react';
 import axios from 'axios';
+import NoteList from './NoteList';
+import NoteForm from './NoteForm';
 
 const Notes = () => {
   const [notes, setNotes] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [newNote, setNewNote] = useState({ title: '', content: '' });
 
   useEffect(() => {
     fetchNotes();
@@ -23,11 +25,10 @@ const Notes = () => {
     }
   };
 
-  const createNote = async () => {
+  const addNote = async (newNote) => {
     try {
       const res = await axios.post('/api/notes', newNote);
       setNotes([...notes, res.data]);
-      setNewNote({ title: '', content: '' });
     } catch (err) {
       setError('Failed to save note');
     }
@@ -43,34 +44,19 @@ const Notes = () => {
   };
 
   return (
-    <div>
-      <h1>Notes</h1>
-      {loading && <p>Loading...</p>}
-      {error && <p>{error}</p>}
-      <ul>
-        {notes.map(note => (
-          <li key={note._id}>
-            <h2>{note.title}</h2>
-            <p>{note.content.substring(0, 50)}...</p>
-            <button onClick={() => deleteNote(note._id)}>Delete</button>
-          </li>
-        ))}
-      </ul>
-
-      <h2>Create Note</h2>
-      <input
-        type="text"
-        placeholder="Title"
-        value={newNote.title}
-        onChange={(e) => setNewNote({ ...newNote, title: e.target.value })}
-      />
-      <textarea
-        placeholder="Content"
-        value={newNote.content}
-        onChange={(e) => setNewNote({ ...newNote, content: e.target.value })}
-      />
-      <button onClick={createNote}>Add Note</button>
-    </div>
+    <Box p={5} bg="gray.50" minH="100vh" className="mt-5 text-center" style={{backgroundImage: "url('/noteTking.jpg')", 
+        backgroundSize: "cover", 
+        backgroundPosition: "center", 
+        backgroundRepeat: "no-repeat", 
+        minHeight: "100vh",}}>
+      <VStack spacing={5} align="center">
+        <Text fontSize="3xl" fontWeight="bold">Note-Taking App</Text>
+        {loading && <Spinner size="lg" />}
+        {error && <Text color="red.500">{error}</Text>}
+        <NoteList notes={notes} onDelete={deleteNote} />
+        <NoteForm onAddNote={addNote} />
+      </VStack>
+    </Box>
   );
 };
 
