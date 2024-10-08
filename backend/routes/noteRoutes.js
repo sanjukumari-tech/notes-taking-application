@@ -37,15 +37,15 @@ router.get('/notes/:id', async (req, res) => {
     }
 });
 
-// Update Note by ID
-router.put('/notes/:id', async (req, res) => {
-    try {
-        const updatedNote = await Note.findByIdAndUpdate(req.params.id, req.body, { new: true });
-        res.json(updatedNote);
-    } catch (error) {
-        res.status(400).json({ message: error.message });
-    }
-});
+// // Update Note by ID
+// router.put('/notes/:id', async (req, res) => {
+//     try {
+//         const updatedNote = await Note.findByIdAndUpdate(req.params.id, req.body, { new: true });
+//         res.json(updatedNote);
+//     } catch (error) {
+//         res.status(400).json({ message: error.message });
+//     }
+// });
 
 // Delete Note by ID
 router.delete('/notes/:id', async (req, res) => {
@@ -56,5 +56,30 @@ router.delete('/notes/:id', async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 });
+
+
+router.put('/:id', async (req, res) => {
+    const { id } = req.params;
+    const { title, content } = req.body;
+  
+    try {
+      // Find the note by ID and update it with new data
+      const updatedNote = await Note.findByIdAndUpdate(
+        id,
+        { title, content }, // Fields to update
+        { new: true } // Option to return the updated note
+      );
+  
+      if (!updatedNote) {
+        return res.status(404).json({ message: 'Note not found' });
+      }
+  
+      // Send the updated note as response
+      res.json(updatedNote);
+    } catch (error) {
+      console.error('Error updating note:', error);
+      res.status(500).json({ message: 'Server error' });
+    }
+  });
 
 module.exports = router;

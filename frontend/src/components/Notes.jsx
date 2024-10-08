@@ -43,6 +43,18 @@ const Notes = () => {
     }
   };
 
+
+  const updateNote = async (id, updatedNote) => {
+    try {
+      const res = await axios.put(`/api/notes/${id}`, updatedNote);
+      setNotes(
+        notes.map((note) => (note._id === id ? { ...note, ...updatedNote } : note))
+      );
+    } catch (err) {
+      setError('Failed to update note');
+    }
+  };
+
   return (
     <Box p={5} bg="gray.50" minH="100vh" className="mt-5 text-center" style={{backgroundImage: "url('/noteTking.jpg')", 
         backgroundSize: "cover", 
@@ -53,7 +65,7 @@ const Notes = () => {
         <Text fontSize="3xl" fontWeight="bold">Note-Taking App</Text>
         {loading && <Spinner size="lg" />}
         {error && <Text color="red.500">{error}</Text>}
-        <NoteList notes={notes} onDelete={deleteNote} />
+        <NoteList notes={notes} onDelete={deleteNote} onUpdate={updateNote} />
         <NoteForm onAddNote={addNote} />
       </VStack>
     </Box>
